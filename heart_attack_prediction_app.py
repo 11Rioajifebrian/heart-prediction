@@ -12,36 +12,53 @@ def load_data():
 
 # Main function for Streamlit app
 def main():
-    # App title
-    st.title("Heart Attack Prediction App 🫀")
+    # App title with enhanced styling
+    st.markdown("""
+    <div style="background-color: #FF6F61; padding: 10px; border-radius: 10px;">
+        <h1 style="color: white; text-align: center;">Heart Attack Prediction App 🫀</h1>
+    </div>
+    """, unsafe_allow_html=True)
+
     st.write("""
-    **Aplikasi ini membantu memprediksi kemungkinan serangan jantung berdasarkan data medis.**
-    Masukkan informasi Anda di formulir sebelah kiri, lalu klik tombol **Submit** untuk melihat hasilnya.
-    """)
+    <p style="text-align: center; font-size: 18px;">
+    Aplikasi ini membantu memprediksi kemungkinan serangan jantung berdasarkan data medis.
+    Masukkan informasi Anda di formulir di bawah ini, lalu klik tombol <strong>Submit</strong> untuk melihat hasilnya.
+    </p>
+    """, unsafe_allow_html=True)
 
     # Load data
     data = load_data()
 
-    # Sidebar form for user input
-    st.sidebar.header("Input Data Anda")
-    with st.sidebar.form("user_input_form"):
-        age = st.slider("Umur (Tahun)", int(data.age.min()), int(data.age.max()), int(data.age.mean()))
-        sex = st.selectbox("Jenis Kelamin", options=["Perempuan (0)", "Laki-laki (1)"], index=1)
-        cp = st.selectbox("Jenis Nyeri Dada", ["0: Tidak Nyeri", "1: Nyeri Ringan", "2: Nyeri Sedang", "3: Nyeri Berat"], index=1)
-        trtbps = st.slider("Tekanan Darah Istirahat (mm Hg)", int(data.trtbps.min()), int(data.trtbps.max()), int(data.trtbps.mean()))
-        chol = st.slider("Kadar Kolesterol (mg/dl)", int(data.chol.min()), int(data.chol.max()), int(data.chol.mean()))
-        fbs = st.selectbox("Gula Darah Puasa > 120 mg/dl", ["Tidak (0)", "Ya (1)"], index=0)
-        restecg = st.selectbox("Hasil ECG (Elektrokardiografi)", ["0: Normal", "1: Abnormal", "2: Hipertrofi"], index=0)
-        thalachh = st.slider("Detak Jantung Maksimal", int(data.thalachh.min()), int(data.thalachh.max()), int(data.thalachh.mean()))
-        exng = st.selectbox("Angina Induksi Olahraga", ["Tidak (0)", "Ya (1)"], index=0)
-        oldpeak = st.slider("Depresi ST", float(data.oldpeak.min()), float(data.oldpeak.max()), float(data.oldpeak.mean()))
-        slp = st.selectbox("Kemiringan ST", ["0: Turun", "1: Datar", "2: Naik"], index=1)
-        caa = st.slider("Jumlah Pembuluh Utama (0-4)", 0, 4, 0)
-        thall = st.selectbox("Thalassemia", ["1: Normal", "2: Cacat Tetap", "3: Cacat Reversibel"], index=2)
+    # Center the input form
+    with st.container():
+        st.markdown("""
+        <div style="display: flex; justify-content: center;">
+            <div style="width: 60%; background-color: #F8F9F9; padding: 20px; border-radius: 10px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);">
+        """, unsafe_allow_html=True)
 
-        # Submit button
-        submitted = st.form_submit_button("Submit")
+        # Form for user input
+        with st.form("user_input_form"):
+            st.markdown("<h3 style='text-align: center;'>Masukkan Data Anda</h3>", unsafe_allow_html=True)
+            age = st.slider("Umur (Tahun)", int(data.age.min()), int(data.age.max()), int(data.age.mean()))
+            sex = st.selectbox("Jenis Kelamin", options=["Perempuan (0)", "Laki-laki (1)"], index=1)
+            cp = st.selectbox("Jenis Nyeri Dada", ["0: Tidak Nyeri", "1: Nyeri Ringan", "2: Nyeri Sedang", "3: Nyeri Berat"], index=1)
+            trtbps = st.slider("Tekanan Darah Istirahat (mm Hg)", int(data.trtbps.min()), int(data.trtbps.max()), int(data.trtbps.mean()))
+            chol = st.slider("Kadar Kolesterol (mg/dl)", int(data.chol.min()), int(data.chol.max()), int(data.chol.mean()))
+            fbs = st.selectbox("Gula Darah Puasa > 120 mg/dl", ["Tidak (0)", "Ya (1)"], index=0)
+            restecg = st.selectbox("Hasil ECG (Elektrokardiografi)", ["0: Normal", "1: Abnormal", "2: Hipertrofi"], index=0)
+            thalachh = st.slider("Detak Jantung Maksimal", int(data.thalachh.min()), int(data.thalachh.max()), int(data.thalachh.mean()))
+            exng = st.selectbox("Angina Induksi Olahraga", ["Tidak (0)", "Ya (1)"], index=0)
+            oldpeak = st.slider("Depresi ST", float(data.oldpeak.min()), float(data.oldpeak.max()), float(data.oldpeak.mean()))
+            slp = st.selectbox("Kemiringan ST", ["0: Turun", "1: Datar", "2: Naik"], index=1)
+            caa = st.slider("Jumlah Pembuluh Utama (0-4)", 0, 4, 0)
+            thall = st.selectbox("Thalassemia", ["1: Normal", "2: Cacat Tetap", "3: Cacat Reversibel"], index=2)
 
+            # Submit button
+            submitted = st.form_submit_button("Submit")
+
+        st.markdown("</div></div>", unsafe_allow_html=True)
+
+    # Prediction logic
     if submitted:
         # Process user inputs
         input_data = pd.DataFrame({
@@ -70,15 +87,13 @@ def main():
         prediction_proba = model.predict_proba(input_data)
 
         # Display results
-        st.write("## Hasil Prediksi")
+        st.markdown("<hr>", unsafe_allow_html=True)
         if prediction[0] == 1:
-            st.success("⚠️ Anda berisiko terkena serangan jantung.")
-            st.write(f"**Probabilitas risiko**: {prediction_proba[0][1] * 100:.2f}%")
+            st.error(f"⚠️ **Anda berisiko terkena serangan jantung!**\n\nProbabilitas risiko: {prediction_proba[0][1] * 100:.2f}%")
         else:
-            st.success("✅ Anda tidak berisiko terkena serangan jantung.")
-            st.write(f"**Probabilitas aman**: {prediction_proba[0][0] * 100:.2f}%")
+            st.success(f"✅ **Anda tidak berisiko terkena serangan jantung!**\n\nProbabilitas aman: {prediction_proba[0][0] * 100:.2f}%")
 
-        st.write("### Data yang Anda Masukkan:")
+        st.markdown("<br><h4>Data yang Anda Masukkan:</h4>", unsafe_allow_html=True)
         st.table(input_data)
 
 if __name__ == '__main__':
